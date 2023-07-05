@@ -1,0 +1,61 @@
+#before rbm
+import numpy as np
+from sklearn.neural_network import BernoulliRBM
+from sklearn.datasets import fetch_openml
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import classification_report
+
+# Load the MNIST dataset
+mnist = fetch_openml('mnist_784', version=1)
+X = mnist.data
+y = mnist.target
+
+# Preprocess the data
+X = X / 255.0  # Normalize pixel values to the range [0, 1]
+
+# Split the data into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+from sklearn.linear_model import LogisticRegression
+classifier_1 = LogisticRegression(max_iter=1000)
+classifier_1.fit(X_train, y_train)
+y_pred_1 = classifier_1.predict(X_test)
+print(classification_report(y_test,y_pred_1))
+from sklearn.metrics import accuracy_score
+accuracy = accuracy_score(y_test, y_pred_1)
+print("Accuracy: {:.2f}%".format(accuracy * 100))
+
+#after rbm
+import numpy as np
+from sklearn.neural_network import BernoulliRBM
+from sklearn.datasets import fetch_openml
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import classification_report
+
+# Load the MNIST dataset
+mnist = fetch_openml('mnist_784', version=1)
+X = mnist.data
+y = mnist.target
+
+# Preprocess the data
+X = X / 255.0  # Normalize pixel values to the range [0, 1]
+
+# Split the data into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Create an RBM instance
+rbm = BernoulliRBM(n_components=100, learning_rate=0.01, n_iter=10, random_state=0)
+
+# Train the RBM
+rbm.fit(X_train)
+
+# Transform the input data using the trained RBM
+X_train_transformed = rbm.transform(X_train)
+X_test_transformed = rbm.transform(X_test)
+from sklearn.linear_model import LogisticRegression
+classifier = LogisticRegression(max_iter=1000)
+classifier.fit(X_train_transformed, y_train)
+y_pred = classifier.predict(X_test_transformed)
+print(classification_report(y_test,y_pred))
+from sklearn.metrics import accuracy_score
+accuracy = accuracy_score(y_test, y_pred)
+print("Accuracy: {:.2f}%".format(accuracy * 100))
